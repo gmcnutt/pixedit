@@ -6,27 +6,16 @@
 
 #include <SDL2/SDL.h>
 
-/**
- * Blit a texture to an iso grid.
- */
-void iso_blit(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Rect *srcrect,
-              int map_x, int map_y);
-
-/**
- * Fill an iso grid with a texture.
- */
-void iso_fill(SDL_Renderer *renderer, SDL_Texture *texture, SDL_Rect *srcrect,
-              int map_w, int map_h);
+typedef struct iso_grid {
+        int w, h; /* in tiles */
+        struct {
+                int w, h; /* in pixels */
+        } tile;
+} iso_grid_t;
 
 /**
  * Render isometric grid lines.
  */
-void iso_grid(SDL_Renderer *renderer, int map_w, int map_h);
-
-/**
- * Convert screen coordinates back to map coordinates. Returns -1 if
- * coordinates are off-map.
- */
-int iso_screen_to_map(int screen_x, int screen_y, int *map_x, int *map_y);
+void iso_draw_grid(SDL_Renderer *renderer, iso_grid_t *grid);
 
 #endif

@@ -7,8 +7,7 @@
 
 #include <SDL2/SDL.h>
 
-typedef struct args {
-} args_t;
+#include "iso.h"
 
 typedef struct app {
         SDL_Window *window;
@@ -21,15 +20,14 @@ typedef struct app {
                 size_t events_seen;
                 size_t events_handled;
         } perf;
-        
-        /* Commandline args */
-        int iso_tile_width_pixels;
+
+        iso_grid_t grid;
         int max_sprite_height_pixels;
-        int max_sprite_width_tiles;
         int zoom_factor;
+
         const char *filename;
-        
-        char done: 1;
+
+        unsigned char done: 1;
 } app_t;
 
 void app_init(app_t *app);

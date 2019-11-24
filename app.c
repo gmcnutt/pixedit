@@ -9,7 +9,7 @@ static void app_render(app_t *app)
 
         /* Show the iso grid */
         SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-        iso_grid(app->renderer, 10, 10);
+        iso_draw_grid(app->renderer, &app->grid);
 
         /* Update view */
         SDL_RenderPresent(app->renderer);
@@ -48,9 +48,11 @@ void app_init(app_t *app)
         memset(app, 0, sizeof(*app));
 
         /* Default values */
-        app->iso_tile_width_pixels = 16;
+        app->grid.tile.w  = 64;
+        app->grid.tile.h = 32;
         app->max_sprite_height_pixels = 128;
-        app->max_sprite_width_tiles = 3;
+        app->grid.w  = 10;
+        app->grid.h  = 10;
         app->zoom_factor = 16;
                 
         app->dispatch = app_dispatch;

@@ -21,9 +21,9 @@ static void print_usage(app_t *app)
                "    -i <pixels>: iso tile width [%d]\n"
                "    -w <tiles>: max sprite width [%d]\n"
                "    -z <integer>: zoom factor [%d]\n",
-               app->iso_tile_width_pixels,
+               app->grid.tile.w,
                app->max_sprite_height_pixels,
-               app->max_sprite_width_tiles,
+               app->grid.w,
                app->zoom_factor
                 );
 }
@@ -42,10 +42,12 @@ static void parse_args(int argc, char **argv, app_t *app)
                         app->max_sprite_height_pixels = atoi(optarg);
                         break;
                 case 'i':
-                        app->iso_tile_width_pixels = atoi(optarg);
+                        app->grid.tile.w = atoi(optarg);
+                        app->grid.tile.h = app->grid.tile.w / 2;
                         break;
                 case 'w':
-                        app->max_sprite_width_tiles = atoi(optarg);
+                        app->grid.w = atoi(optarg);
+                        app->grid.h = app->grid.w;
                         break;
                 case 'z':
                         app->zoom_factor = atoi(optarg);
