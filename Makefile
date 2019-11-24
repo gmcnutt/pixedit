@@ -15,7 +15,7 @@ endif
 all: $(program)
 
 $(program): $(objects)
-	$(CC) $(CFLAGS) $(LDFLAGS) $< -o $@ $(LDLIBS)
+	$(CC) $(CFLAGS) $(LDFLAGS) $^ -o $@ $(LDLIBS)
 
 clean:
 	rm -f $(program) $(objects)

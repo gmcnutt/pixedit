@@ -7,37 +7,12 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 
-typedef struct args {
-        int iso_tile_width_pixels;
-        int max_sprite_height_pixels;
-        int max_sprite_width_tiles;
-        int zoom_factor;
-        const char *filename;
-} args_t;
-
-typedef struct app {
-        args_t args;
-        struct {
-                size_t frames;
-                size_t events_seen;
-                size_t events_handled;
-        } perf;
-        SDL_Window *window;
-        SDL_Renderer *renderer;
-        void (*dispatch)(struct app *, SDL_Event *event);
-        void (*render)(struct app *);
-        char done: 1;
-} app_t;
-
-const int DEFAULT_ISO_TILE_WIDTH_PIXELS = 16;
-const int DEFAULT_MAX_SPRITE_HEIGHT_PIXELS = 128;
-const int DEFAULT_MAX_SPRITE_WIDTH_TILES = 3;
-const int DEFAULT_ZOOM_FACTOR = 16;
+#include "app.h"
 
 /**
  * Print a command-line usage message.
  */
-static void print_usage(void)
+static void print_usage(app_t *app)
 {
         printf("Usage:  ibp [options] <file>\n"
                "Options: \n"
@@ -46,10 +21,10 @@ static void print_usage(void)
                "    -i <pixels>: iso tile width [%d]\n"
                "    -w <tiles>: max sprite width [%d]\n"
                "    -z <integer>: zoom factor [%d]\n",
-               DEFAULT_ISO_TILE_WIDTH_PIXELS,
-               DEFAULT_MAX_SPRITE_HEIGHT_PIXELS,
-               DEFAULT_MAX_SPRITE_WIDTH_TILES,
-               DEFAULT_ZOOM_FACTOR
+               app->iso_tile_width_pixels,
+               app->max_sprite_height_pixels,
+               app->max_sprite_width_tiles,
+               app->zoom_factor
                 );
 }
 
@@ -57,80 +32,41 @@ static void print_usage(void)
 /**
  * Parse command-line args.
  */
-static void parse_args(int argc, char **argv, struct args *args)
+static void parse_args(int argc, char **argv, app_t *app)
 {
         int c = 0;
-
-        memset(args, 0, sizeof(*args));
 
         while ((c = getopt(argc, argv, "H:i:w:z:")) != -1) {
                 switch (c) {
                 case 'H':
-                        args->max_sprite_height_pixels = atoi(optarg);
+                        app->max_sprite_height_pixels = atoi(optarg);
                         break;
                 case 'i':
-                        args->iso_tile_width_pixels = atoi(optarg);
+                        app->iso_tile_width_pixels = atoi(optarg);
                         break;
                 case 'w':
-                        args->max_sprite_width_tiles = atoi(optarg);
+                        app->max_sprite_width_tiles = atoi(optarg);
                         break;
                 case 'z':
-                        args->zoom_factor = atoi(optarg);
+                        app->zoom_factor = atoi(optarg);
                         break;
                 case '?':
                 default:
-                        print_usage();
+                        print_usage(app);
                         exit(-1);
                         break;
                 }
         }
 
         if (optind < argc) {
-                args->filename = argv[optind];
+                app->filename = argv[optind];
         } else {
                 printf("No filename given\n");
-                print_usage();
+                print_usage(app);
                 exit(-1);
         }
 }
 
-static void app_render(app_t *app)
-{
-        /* Clear screen */
-        SDL_SetRenderDrawColor(app->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
-        SDL_RenderClear(app->renderer);
-
-        /* Update view */
-        SDL_RenderPresent(app->renderer);
-
-        app->perf.frames++;
-}
-
-static void app_dispatch(app_t *app, SDL_Event *event)
-{
-        switch (event->type) {
-        case SDL_QUIT:
-                app->done = 1;
-                app->perf.events_handled++;
-                break;
-        case SDL_KEYDOWN:
-                switch (event->key.keysym.sym) {
-                case SDLK_q:
-                        app->done = 1;
-                        app->perf.events_handled++;
-                        break;
-                default:
-                        break;
-                }
-                break;
-        case SDL_WINDOWEVENT:
-                app->render(app);
-                app->perf.events_handled++;
-                break;
-        default:
-                break;
-        }
-}
 
 int main(int argc, char **argv)
 {
@@ -138,10 +74,9 @@ int main(int argc, char **argv)
         Uint32 start_ticks, end_ticks;
         SDL_Event event;
 
-        app.dispatch = app_dispatch;
-        app.render = app_render;
+        app_init(&app);
 
-        parse_args(argc, argv, &app.args);
+        parse_args(argc, argv, &app);
 
         /* Init SDL */
         if (SDL_Init(SDL_INIT_VIDEO)) {
