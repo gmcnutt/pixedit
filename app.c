@@ -51,9 +51,9 @@ void app_init(app_t *app)
         app->grid.tile.w  = 64;
         app->grid.tile.h = 32;
         app->max_sprite_height_pixels = 128;
-        app->grid.w  = 10;
-        app->grid.h  = 10;
-        app->zoom_factor = 16;
+        app->grid.w  = 1;
+        app->grid.h  = 1;
+        app->zoom_factor = 8;
                 
         app->dispatch = app_dispatch;
         app->render = app_render;
