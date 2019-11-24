@@ -1,11 +1,15 @@
 #include "app.h"
-
+#include "iso.h"
 
 static void app_render(app_t *app)
 {
         /* Clear screen */
         SDL_SetRenderDrawColor(app->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(app->renderer);
+
+        /* Show the iso grid */
+        SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
+        iso_grid(app->renderer, 10, 10);
 
         /* Update view */
         SDL_RenderPresent(app->renderer);
