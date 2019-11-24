@@ -22,9 +22,9 @@ static void print_usage(app_t *app)
                "    -w <tiles>: max sprite width [%d]\n"
                "    -z <integer>: zoom factor [%d]\n",
                app->grid.tile.w,
-               app->max_sprite_height_pixels,
+               app->max_sprite_h,
                app->grid.w,
-               app->zoom_factor
+               app->zoom
                 );
 }
 
@@ -39,7 +39,7 @@ static void parse_args(int argc, char **argv, app_t *app)
         while ((c = getopt(argc, argv, "H:i:w:z:")) != -1) {
                 switch (c) {
                 case 'H':
-                        app->max_sprite_height_pixels = atoi(optarg);
+                        app->max_sprite_h = atoi(optarg);
                         break;
                 case 'i':
                         app->grid.tile.w = atoi(optarg);
@@ -50,7 +50,7 @@ static void parse_args(int argc, char **argv, app_t *app)
                         app->grid.h = app->grid.w;
                         break;
                 case 'z':
-                        app->zoom_factor = atoi(optarg);
+                        app->zoom = atoi(optarg);
                         break;
                 case '?':
                 default:
@@ -92,7 +92,9 @@ int main(int argc, char **argv)
         /* Create the main window */
         if (! (app.window = SDL_CreateWindow(
                        "Demo", SDL_WINDOWPOS_UNDEFINED,
-                       SDL_WINDOWPOS_UNDEFINED, 640, 480,
+                       SDL_WINDOWPOS_UNDEFINED,
+                       app.grid.w * app.grid.tile.w * app.zoom,
+                       app.max_sprite_h * app.zoom,
                        SDL_WINDOW_OPENGL | SDL_WINDOW_SHOWN))) {
                 printf("SDL_CreateWindow: %s\n", SDL_GetError());
                 return -1;

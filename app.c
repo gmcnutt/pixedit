@@ -1,15 +1,36 @@
 #include "app.h"
 #include "iso.h"
 
+static void draw_pixel_grid(app_t *app)
+{
+        int top = 0, left = 0;
+        int right = app->grid.tile.w * app->zoom;
+        int bottom = app->max_sprite_h * app->zoom;
+
+        for (int y = top; y <= bottom; y += app->zoom) {
+                SDL_RenderDrawLine(app->renderer, left, y, right, y);
+        }
+
+        for (int x = left; x <= right; x += app->zoom) {
+                SDL_RenderDrawLine(app->renderer, x, top, x, bottom);
+        }
+
+}
+
 static void app_render(app_t *app)
 {
         /* Clear screen */
+
+
+
         SDL_SetRenderDrawColor(app->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(app->renderer);
 
-        /* Show the iso grid */
+        /* Show the pixel grid */
         SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
-        iso_draw_grid(app->renderer, &app->grid);
+        if (app->zoom > 2) {
+                draw_pixel_grid(app);
+        }
 
         /* Update view */
         SDL_RenderPresent(app->renderer);
@@ -50,11 +71,11 @@ void app_init(app_t *app)
         /* Default values */
         app->grid.tile.w  = 64;
         app->grid.tile.h = 32;
-        app->max_sprite_height_pixels = 128;
+        app->max_sprite_h = 64;
         app->grid.w  = 1;
         app->grid.h  = 1;
-        app->zoom_factor = 8;
-                
+        app->zoom = 8;
+
         app->dispatch = app_dispatch;
         app->render = app_render;
 }

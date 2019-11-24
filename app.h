@@ -22,8 +22,8 @@ typedef struct app {
         } perf;
 
         iso_grid_t grid;
-        int max_sprite_height_pixels;
-        int zoom_factor;
+        int max_sprite_h;  /* pixels */
+        int zoom;          /* factor */
 
         const char *filename;
 
