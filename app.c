@@ -17,20 +17,63 @@ static void draw_pixel_grid(app_t *app)
 
 }
 
+static void draw_pixel(app_t *app, int x, int y)
+{
+        SDL_Rect rect = {
+                x * app->zoom,
+                y * app->zoom,
+                app->zoom,
+                app->zoom
+        };
+        SDL_RenderFillRect(app->renderer, &rect);
+}
+
+static void draw_iso_floor_plan(app_t *app)
+{
+        int left = 0;
+        int right = app->grid.tile.w;
+        int bottom = app->max_sprite_h;
+        int middle = app->grid.tile.w / 2;
+
+        int y1 = bottom - app->grid.tile.h / 2 - 1;
+        int y2 = bottom - app->grid.tile.h / 2 - 1;
+        int x = left;
+        for (; x < middle; x++) {
+                draw_pixel(app, x, y1);
+                draw_pixel(app, x, y2);
+                if (! (x % 2)) {
+                        y1--;
+                        y2++;
+                }
+        }
+        for (; x < right; x++) {
+                draw_pixel(app, x, y1);
+                draw_pixel(app, x, y2);
+                if (! (x % 2)) {
+                        y1++;
+                        y2--;
+                }
+        }
+
+}
+
 static void app_render(app_t *app)
 {
         /* Clear screen */
-
-
-
         SDL_SetRenderDrawColor(app->renderer, 255, 255, 255, SDL_ALPHA_OPAQUE);
         SDL_RenderClear(app->renderer);
 
         /* Show the pixel grid */
+        SDL_SetRenderDrawBlendMode(app->renderer, SDL_BLENDMODE_BLEND);
         SDL_SetRenderDrawColor(app->renderer, 0, 0, 0, SDL_ALPHA_OPAQUE);
         if (app->zoom > 2) {
                 draw_pixel_grid(app);
         }
+
+        /* Show the iso tile floor plan on the pixel grid */
+        SDL_SetRenderDrawColor(app->renderer, 0, 255, 255, 128);
+        draw_iso_floor_plan(app);
+
 
         /* Update view */
         SDL_RenderPresent(app->renderer);
